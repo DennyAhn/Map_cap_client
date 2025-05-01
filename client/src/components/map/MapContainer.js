@@ -32,7 +32,7 @@ const filterButtons = {
 };
 
 // API 호출을 위한 기본 URL
-const API_BASE_URL = 'http://localhost:3001'; // 개발 환경에서는 localhost 사용
+const API_BASE_URL = 'http://15.164.94.96:3001'; // 개발 환경에서는 localhost 사용
 
 const MapContainer = ({ 
   selectedMode, 
@@ -118,7 +118,7 @@ const MapContainer = ({
         '경찰서': '/api/policePlaces',
         '안전비상벨': '/api/womenPlaces',
         'CCTV': '/api/cctvPlaces',
-        '약국': '/api/pharmacyPlaces',
+        '심야약국': '/api/pharmacyPlaces',
         '휠체어 충전소': '/api/wheelChairPlaces',
         '복지시설': '/api/elderlyPlaces',
       };
@@ -405,6 +405,9 @@ const MapContainer = ({
                         <p className="list-item-address">
                           {item.address}
                         </p>
+                      )}
+                      {item.visitors && (
+                        <p className="list-item-visitors">방문자 리뷰 {item.visitors}</p>
                       )}
                       {item.phone && item.phone !== '' && (
                         <p className="list-item-phone">전화: {item.phone}</p>
