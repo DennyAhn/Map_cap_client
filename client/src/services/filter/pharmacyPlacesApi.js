@@ -5,7 +5,7 @@ export const fetchPharmacyPlacesData = async (lat, lng) => {
         lat: lat,
         lng: lng
       });
-      const PROXY_URL = 'https://15.164.94.96';
+      const PROXY_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
       const response = await fetch(`${PROXY_URL}/api/pharmacyPlaces?${params}`);
       
       if (!response.ok) {

@@ -8,7 +8,8 @@ export const fetchCCTVPlacesData = async (lat, lng) => {
       lng: lng
     });
     
-    const PROXY_URL = 'https://15.164.94.96';
+    const PROXY_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    
     const url = `${PROXY_URL}/api/cctvPlaces?${params}`;
     console.log('요청 URL:', url);
     
