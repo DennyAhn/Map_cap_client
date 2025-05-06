@@ -1,6 +1,6 @@
 // src/services/directionApi.js
 export const directionRequest = async (start, goal) => {
-  const PROXY_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const PROXY_URL = 'https://moyak.store';
   const url = `${PROXY_URL}/direction?start=${start}&goal=${goal}`;
   const response = await fetch(url, {
     method: "GET",

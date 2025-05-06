@@ -5,7 +5,7 @@ export const fetchPharmacyPlacesData = async (lat, lng) => {
         lat: lat,
         lng: lng
       });
-      const PROXY_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const PROXY_URL = 'https://moyak.store';
       const response = await fetch(`${PROXY_URL}/api/pharmacyPlaces?${params}`);
       
       if (!response.ok) {

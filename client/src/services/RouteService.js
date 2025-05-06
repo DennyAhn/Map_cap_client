@@ -140,7 +140,7 @@ class RouteService {
       
       console.log('요청 좌표:', { start: startStr, goal: goalStr });
 
-      const PROXY_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const PROXY_URL = 'https://moyak.store';
 
       const response = await fetch(
         `${PROXY_URL}/direction/${apiEndpoint}?start=${startStr}&goal=${goalStr}`

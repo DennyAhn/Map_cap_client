@@ -6,7 +6,7 @@ export const fetchWomenPlacesData = async (lat, lng) => {
       lng: lng
     });
     
-    const PROXY_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const PROXY_URL = 'https://moyak.store';
     const response = await fetch(`${PROXY_URL}/api/womenPlaces?${params}`);
     
     if (!response.ok) {
