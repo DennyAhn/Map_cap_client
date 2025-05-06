@@ -141,7 +141,7 @@ class RouteService {
       console.log('요청 좌표:', { start: startStr, goal: goalStr });
 
       const response = await fetch(
-        `https://15.164.94.96:3001/direction/${apiEndpoint}?start=${startStr}&goal=${goalStr}`
+        `https://15.164.94.96/direction/${apiEndpoint}?start=${startStr}&goal=${goalStr}`
       );
 
       if (!response.ok) {
