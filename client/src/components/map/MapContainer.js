@@ -1,5 +1,5 @@
 // src/components/map/MapContainer.js
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import NaverMap from './NaverMap';
 import MenuPanel from '../panels/MenuPanel';
 import './MapContainer.css';
@@ -21,7 +21,7 @@ const filterButtons = {
   ],
   '노약자': [
     { icon: '/images/map/category/ele.png', text: '지하철역 엘리베이터' },
-    { icon: '/images/map/category/drugstore.png', text: '심야약국' },
+    { icon: '/images/map/category/drugstore.png', text: '약국' },
     { icon: '/images/map/category/charge.png', text: '휠체어 충전소' },
     { icon: '/images/map/category/noin.png', text: '복지시설' },
     { icon: '/images/map/category/store.png', text: '편의점' },
@@ -32,8 +32,7 @@ const filterButtons = {
 };
 
 // API 호출을 위한 기본 URL
-
-const API_BASE_URL = 'https://moyak.store';// 개발 환경에서는 localhost 사용
+const API_BASE_URL = 'http://localhost:3001'; // 개발 환경에서는 localhost 사용
 
 const MapContainer = ({ 
   selectedMode, 
@@ -58,26 +57,34 @@ const MapContainer = ({
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
 
 
-  // API에서 데이터 가져오기
+  // API에서 데이터 가져오기 (중복 요청 방지 및 캐싱 기능이 포함된 최적화 버전)
   const fetchCategoryData = async (category) => {
     setIsLoading(true);
     setError(null);
     console.log(`${category} 데이터 요청 시작...`);
     
     try {
-      // 현재 위치 가져오기
+      // 현재 지도 중심 위치 가져오기 (사용자 GPS 위치 대신)
       let latitude = 35.8533;  // 기본 위치
       let longitude = 128.4897;  // 기본 위치
       
-      if (mapServiceRef.current?.getCurrentLocation) {
-        const currentLocation = mapServiceRef.current.getCurrentLocation();
-        if (currentLocation) {
-          latitude = currentLocation.latitude;
-          longitude = currentLocation.longitude;
+      if (mapServiceRef.current) {
+        // getMapCenter 메서드 호출 - 현재 지도 중심 위치
+        const mapCenter = mapServiceRef.current.getMapCenter();
+        if (mapCenter) {
+          latitude = mapCenter.latitude;
+          longitude = mapCenter.longitude;
+          console.log(`지도 중심 위치: 위도 ${latitude}, 경도 ${longitude}`);
+        } else {
+          // 지도 중심을 가져올 수 없는 경우 GPS 위치 사용 (폴백)
+          const currentLocation = mapServiceRef.current.getCurrentLocation();
+          if (currentLocation) {
+            latitude = currentLocation.latitude;
+            longitude = currentLocation.longitude;
+            console.log(`GPS 위치 사용: 위도 ${latitude}, 경도 ${longitude}`);
+          }
         }
       }
-      
-      console.log(`현재 위치: 위도 ${latitude}, 경도 ${longitude}`);
       
       // 지하철역 엘리베이터 또는 외국인 주의구역인 경우 placesApi에서 직접 데이터 가져오기
       if (category === '지하철역 엘리베이터' || category === '외국인 주의구역') {
@@ -119,7 +126,7 @@ const MapContainer = ({
         '경찰서': '/api/policePlaces',
         '안전비상벨': '/api/womenPlaces',
         'CCTV': '/api/cctvPlaces',
-        '심야약국': '/api/pharmacyPlaces',
+        '약국': '/api/pharmacyPlaces',
         '휠체어 충전소': '/api/wheelChairPlaces',
         '복지시설': '/api/elderlyPlaces',
       };
@@ -204,9 +211,12 @@ const MapContainer = ({
     }
   };
 
-  const handleFilterClick = async (filterText) => {
-    // 같은 카테고리를 다시 클릭하는 경우
-    if (selectedCategory === filterText && showListPanel) {
+  const handleFilterClick = async (filterText, options = {}) => {
+    // options 객체에서 fromDragEvent 플래그 추출 (지도 드래그 이벤트에서 호출된 경우)
+    const { fromDragEvent = false } = options;
+    
+    // 같은 카테고리를 다시 클릭하는 경우 및 드래그 이벤트가 아닌 경우에만 패널 토글
+    if (selectedCategory === filterText && showListPanel && !fromDragEvent) {
       // 리스트 패널 닫기
       setShowListPanel(false);
       setSelectedCategory(null);
@@ -214,18 +224,26 @@ const MapContainer = ({
       // 필터에서도 제거하여 마커 삭제 트리거
       setActiveFilters(prev => prev.filter(f => f !== filterText));
     } else {
-      // 다른 카테고리를 클릭하는 경우
+      // 먼저 필터 상태 업데이트하여 마커가 즉시 표시되도록 함
+      if (!fromDragEvent) {
+        setActiveFilters([filterText]);
+      }
       
-      // 모든 기존 필터 제거하고 새 필터만 추가 (한 번에 하나의 카테고리만 표시)
-      setActiveFilters([filterText]);
-      
-      // 리스트 패널 설정
-      setSelectedCategory(filterText);
-      setShowListPanel(true);
-      setListPanelData([]); // 로딩 전 초기화
+      // 로딩 상태 설정 (기존 데이터는 유지하면서 로딩 인디케이터 표시)
+      setIsLoading(true);
       
       try {
+        // 데이터 가져오기
         const data = await fetchCategoryData(filterText);
+        
+        // 이미 선택된 카테고리와 같고 패널이 열려있는 경우, 드래그 이벤트에서는 데이터만 업데이트
+        if (selectedCategory === filterText && showListPanel) {
+          // 데이터만 업데이트하고 패널 상태는 유지
+        } else if (!fromDragEvent) {
+          // 새 카테고리 선택 시 또는 패널이 닫혀있는 경우에만 패널 열기
+          setSelectedCategory(filterText);
+          setShowListPanel(true);
+        }
         
         if (data && data.length > 0) {
           console.log(`리스트 패널 데이터 설정: ${data.length}개 항목`);
@@ -245,19 +263,52 @@ const MapContainer = ({
       } catch (err) {
         console.error(`필터 데이터 가져오기 실패: ${err.message}`);
         setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
-
+    }
+    
+    // 현재 위치 버튼과 유사하게 지도 중심을 현재 위치로 유지
+    if (mapServiceRef.current?.getMapInstance && !fromDragEvent) {
+      const mapInstance = mapServiceRef.current.getMapInstance();
+      if (mapInstance) {
+        // 현재 중심 위치를 유지하되 약간의 줌 효과 적용하여 사용자에게 피드백 제공
+        const currentZoom = mapInstance.getZoom();
+        if (currentZoom < 15) {
+          mapInstance.setZoom(15, true); // 줌이 낮으면 적정 레벨로 조정
+        }
+      }
     }
   };
-  
-    
 
   const handleMoveToCurrent = () => {
     setIsLocationButtonActive(true);
   
-    if (mapServiceRef.current?.moveToCurrentLocation) {
-      mapServiceRef.current.moveToCurrentLocation();
+    if (mapServiceRef.current) {
+      // 현재 위치로만 이동하고 마커나 패널은 유지
+      const currentLocation = mapServiceRef.current.getCurrentLocation();
+      
+      if (currentLocation) {
+        // 지도 중심만 현재 위치로 이동 (마커와 패널 상태는 변경하지 않음)
+        mapServiceRef.current.panTo(currentLocation, 17);
+      } else {
+        // 현재 위치를 가져올 수 없는 경우에만 moveToCurrentLocation 호출
+        mapServiceRef.current.moveToCurrentLocation();
+      }
+      
+      // 필터나 패널 상태는 변경하지 않음 - 이 부분이 중요!
+      // 기존 코드에서 handleFilterClick 호출 부분을 제거
+
+      // 필요하다면 그냥 현재 위치로만 부드럽게 이동
+      const mapInstance = mapServiceRef.current.getMapInstance();
+      if (mapInstance) {
+        const currentZoom = mapInstance.getZoom();
+        if (currentZoom < 15) {
+          mapInstance.setZoom(15, true);
+        }
+      }
     }
+    
     setTimeout(() => setIsLocationButtonActive(false), 3000);
   };
 
@@ -406,9 +457,6 @@ const MapContainer = ({
                         <p className="list-item-address">
                           {item.address}
                         </p>
-                      )}
-                      {item.visitors && (
-                        <p className="list-item-visitors">방문자 리뷰 {item.visitors}</p>
                       )}
                       {item.phone && item.phone !== '' && (
                         <p className="list-item-phone">전화: {item.phone}</p>
