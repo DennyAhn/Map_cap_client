@@ -32,8 +32,7 @@ const filterButtons = {
 };
 
 // API 호출을 위한 기본 URL
-const API_BASE_URL = NEXT_PUBLIC_API_BASE_URL;
-//'https://moyak.store'; // 개발 환경에서는 localhost 사용
+const API_BASE_URL = 'https://moyak.store'; // 개발 환경에서는 localhost 사용
 
 const MapContainer = ({ 
   selectedMode, 
@@ -66,8 +65,8 @@ const MapContainer = ({
     
     try {
       // 현재 지도 중심 위치 가져오기 (사용자 GPS 위치 대신)
-      let latitude = 35.8533;  // 기본 위치
-      let longitude = 128.4897;  // 기본 위치
+      //let latitude = 35.8533;  // 기본 위치
+      //let longitude = 128.4897;  // 기본 위치
       
       if (mapServiceRef.current) {
         // getMapCenter 메서드 호출 - 현재 지도 중심 위치
@@ -387,7 +386,7 @@ const MapContainer = ({
               <div className="loading-indicator">로딩 중...</div>
             ) : error ? (
               <div className="error-message">
-                <p>데이터를 불러오는데 실패했습니다</p>
+                <p>데이터를 불러오는데 실패했습니다aaaa</p>
                 <p className="error-details">{error}</p>
                 <p className="error-help">서버가 실행 중인지 확인하세요</p>
               </div>
