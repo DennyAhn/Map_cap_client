@@ -22,7 +22,7 @@ class MapService {
     // 현재 위치 마커 아이콘 정의
     this.currentLocationIcon = {
       content: `<img src="/images/RouteSelectionScreen/user.png" style="width: 16px; height: 16px;" />`,
-      anchor: new naver.maps.Point(20, 20)
+      anchor: new naver.maps.Point(8, 8)
     };
 
     /** 이미지 + 효과 추가
@@ -67,7 +67,7 @@ class MapService {
           }
         </style>
       `,
-      anchor: new naver.maps.Point(20, 20)
+      anchor: new naver.maps.Point(8, 8)
     };
     */
 
@@ -250,6 +250,22 @@ class MapService {
         }
       );
     }
+  }
+
+  // 지도의 현재 중심 위치 가져오기
+  getMapCenter() {
+    if (!this.mapInstance) return null;
+    
+    const center = this.mapInstance.getCenter();
+    return {
+      latitude: center.lat(),
+      longitude: center.lng()
+    };
+  }
+
+  // 현재 사용자 위치 가져오기 (GPS 기반)
+  getCurrentLocation() {
+    return this.lastKnownPosition;
   }
 }
 
