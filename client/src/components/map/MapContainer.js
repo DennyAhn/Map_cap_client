@@ -386,7 +386,7 @@ const MapContainer = ({
               <div className="loading-indicator">로딩 중...</div>
             ) : error ? (
               <div className="error-message">
-                <p>데이터를 불러오는데 실패했습니다</p>
+                <p>데이터를 불러오는데 실패했습니다gg</p>
                 <p className="error-details">{error}</p>
                 <p className="error-help">서버가 실행 중인지 확인하세요</p>
               </div>
