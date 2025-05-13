@@ -65,8 +65,8 @@ const MapContainer = ({
     
     try {
       // 현재 지도 중심 위치 가져오기 (사용자 GPS 위치 대신)
-      //let latitude = 35.8533;  // 기본 위치
-      //let longitude = 128.4897;  // 기본 위치
+      let latitude = 35.8533;  // 기본 위치
+      let longitude = 128.4897;  // 기본 위치
       
       if (mapServiceRef.current) {
         // getMapCenter 메서드 호출 - 현재 지도 중심 위치
