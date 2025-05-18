@@ -7,7 +7,7 @@ import './SupportPage.css';
 
 const SupportPage = () => {
   const navigate = useNavigate();
-   const API_BASE_URL = "https://moyak.store";
+   
 
   const [inquiryType, setInquiryType] = useState('');
   const [inquiryContent, setInquiryContent] = useState('');
@@ -26,6 +26,7 @@ const SupportPage = () => {
     }
     
     try {
+      const API_BASE_URL = "https://moyak.store";
       await axios.post(`${API_BASE_URL}/api/feature-issues`, {
         title: inquiryType,
         content: inquiryContent

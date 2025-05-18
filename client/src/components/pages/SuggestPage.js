@@ -10,7 +10,7 @@ const SuggestPage = () => {
   const location = useLocation();
   const mapRef = useRef(null);
   const [mapVisible, setMapVisible] = useState(false);
-   const API_BASE_URL = "https://moyak.store";
+   
 
   const [formData, setFormData] = useState({
     title: '',
@@ -112,6 +112,7 @@ const SuggestPage = () => {
     }
 
     try {
+      const API_BASE_URL = "https://moyak.store";
       const response = await axios.post(`${API_BASE_URL}/api/preprocess/analyze`, {
         title: formData.title,
         content: formData.description,
