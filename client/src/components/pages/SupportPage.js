@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './SupportPage.css';
-import { API_BASE_URL } from '../../config/api';
+
 
 const SupportPage = () => {
   const navigate = useNavigate();
+   const API_BASE_URL = "https://moyak.store";
 
   const [inquiryType, setInquiryType] = useState('');
   const [inquiryContent, setInquiryContent] = useState('');
