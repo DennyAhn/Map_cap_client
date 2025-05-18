@@ -9,7 +9,7 @@ import { API_BASE_URL } from '../../config/api';
 const AdminDangerMapPage = () => {
   const mapRef = useRef(null);
   const [paths, setPaths] = useState([]);
-
+ const API_BASE_URL = "https://moyak.store";
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
