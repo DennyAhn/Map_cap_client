@@ -57,7 +57,7 @@ const AdminPage = () => {
     const fetchComplaints = async () => {
       try {
          const API_BASE_URL = "https://moyak.store";
-        const result = await axios.get(`${API_BASE_URL}/api/complaints`);
+        const result = await axios.get(`${API_BASE_URL}/complaints`);
         setComplaints(result.data);
         setFiltered(result.data);
         generateCharts(result.data);
