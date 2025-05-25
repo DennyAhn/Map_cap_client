@@ -9,8 +9,9 @@ import { Link } from 'react-router-dom';
 const AdminDangerMapPage = () => {
   const mapRef = useRef(null);
   const [paths, setPaths] = useState([]);
-  const API_BASE_URL = "https://moyak.store";
+  
   useEffect(() => {
+    const API_BASE_URL = "https://moyak.store";
     const fetchRoutes = async () => {
       try {
         
