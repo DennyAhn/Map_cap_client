@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import "./App.css";
 
@@ -16,9 +16,11 @@ import TermsPage from './components/pages/TermsPage';
 import SupportPage from './components/pages/SupportPage';
 import AdminPage from './components/pages/AdminPage';
 import AdminDangerMap from './components/pages/AdminDangerMap';
+
 import RiskReportPage from './components/pages/RiskReportPage';
 import SuggestTabsPage from "./components/pages/SuggestTabPage";
-import Test from './components/pages/test';
+
+
 
 /** 새로운 추적 화면 컴포넌트 */
 import TrackingScreen from "./components/tracking/TrackingScreen";
@@ -31,6 +33,58 @@ const App = () => {
 
   const [startLocation, setStartLocation] = useState(null);
   const [destination, setDestination] = useState(null);
+  
+  // 지도 서비스 레퍼런스 추가
+  const mapServiceRef = useRef(null);
+
+  // 세션 스토리지에서 경로 정보 불러오기
+  useEffect(() => {
+    const startLat = sessionStorage.getItem('route_start_lat');
+    const startLng = sessionStorage.getItem('route_start_lng');
+    const goalLat = sessionStorage.getItem('route_goal_lat');
+    const goalLng = sessionStorage.getItem('route_goal_lng');
+    const destName = sessionStorage.getItem('route_dest_name');
+    
+    if (startLat && startLng && goalLat && goalLng) {
+      // 출발지 설정
+      const startLocationData = {
+        id: 'from-storage-start',
+        name: '현재 위치',
+        address: '',
+        coords: {
+          latitude: parseFloat(startLat),
+          longitude: parseFloat(startLng)
+        }
+      };
+      
+      // 목적지 설정
+      const destinationData = {
+        id: 'from-storage-destination',
+        name: destName ? decodeURIComponent(destName) : '목적지',
+        address: '',
+        coords: {
+          latitude: parseFloat(goalLat),
+          longitude: parseFloat(goalLng)
+        }
+      };
+      
+      // 상태 업데이트
+      setStartLocation(startLocationData);
+      setDestination(destinationData);
+      
+      // 세션 스토리지 초기화 (한 번만 사용)
+      sessionStorage.removeItem('route_start_lat');
+      sessionStorage.removeItem('route_start_lng');
+      sessionStorage.removeItem('route_goal_lat');
+      sessionStorage.removeItem('route_goal_lng');
+      sessionStorage.removeItem('route_dest_name');
+      
+      console.log('세션 스토리지에서 경로 정보를 불러왔습니다:', { 
+        출발: startLocationData, 
+        도착: destinationData 
+      });
+    }
+  }, []);
 
   const handleModeChange = (mode) => {
     setSelectedMode(mode);
@@ -112,6 +166,7 @@ const App = () => {
                   onClose={handleSearchClose}
                   onNavigate={handleLocationSelected}
                   isStartLocation={isSearchingStart}
+                  mapServiceRef={mapServiceRef}
                 />
               )}
 
@@ -123,6 +178,7 @@ const App = () => {
                   onBack={handleRouteBack}
                   onStartLocationEdit={handleOpenSearchForStart}
                   onDestinationEdit={handleOpenSearchForDestination}
+                  mapServiceRef={mapServiceRef}
                 />
               )}
 
@@ -138,6 +194,7 @@ const App = () => {
                     onEditDestination={handleOpenSearchForDestination}
                     onCurrentLocationUpdate={updateCurrentLocation}
                     startLocation={startLocation}
+                    mapServiceRef={mapServiceRef}
                   />
                   <UserSettingsPanel
                     onModeChange={handleModeChange}
@@ -155,6 +212,7 @@ const App = () => {
                 onClose={() => window.history.back()}
                 onNavigate={handleLocationSelected}
                 isStartLocation={isSearchingStart}
+                mapServiceRef={mapServiceRef}
               />
             }
           />
@@ -169,7 +227,6 @@ const App = () => {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/support" element={<SupportPage />} />
-          <Route path="/test" element={<Test />} />
           <Route path="/report" element={<RiskReportPage />} />
           <Route path="/tabpage" element={<SuggestTabsPage />} />
 
