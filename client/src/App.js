@@ -167,6 +167,8 @@ const App = () => {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/support" element={<SupportPage />} />
           <Route path="/test" element={<Test />} />
+          <Route path="/report" element={<RiskReportPage />} />
+          <Route path="/tabpage" element={<SuggestTabsPage />} />
 
           {/* 실시간 추적 화면 */}
           <Route path="/tracking" element={<TrackingScreen />} />
