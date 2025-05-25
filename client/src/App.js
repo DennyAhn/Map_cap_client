@@ -10,7 +10,7 @@ import RouteSelectionScreen from "./components/search/RouteSelectionScreen";
 import SearchScreen from "./components/search/SearchScreen";
 
 /** 새 페이지 컴포넌트 */
-import SuggestionsPage from './components/pages/SuggestPage';
+import SuggestionsPage from './components/pages/SuggestTabsPage';
 import AboutPage from './components/pages/AboutPage';
 import TermsPage from './components/pages/TermsPage';
 import SupportPage from './components/pages/SupportPage';
