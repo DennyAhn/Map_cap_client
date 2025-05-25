@@ -10,7 +10,7 @@ import RouteSelectionScreen from "./components/search/RouteSelectionScreen";
 import SearchScreen from "./components/search/SearchScreen";
 
 /** 새 페이지 컴포넌트 */
-import SuggestionsPage from './components/pages/SuggestTabsPage';
+import SuggestionsPage from './components/pages/SuggestPage';
 import AboutPage from './components/pages/AboutPage';
 import TermsPage from './components/pages/TermsPage';
 import SupportPage from './components/pages/SupportPage';
@@ -218,7 +218,7 @@ const App = () => {
           />
 
           {/* 건의함 페이지 */}
-          <Route path="/suggest" element={<SuggestionsPage />} />
+          <Route path="/suggest" element={<SuggestTabsPage />} />
           {/* 관리자 페이지 */}
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/danger-map" element={<AdminDangerMap />} />
