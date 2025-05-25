@@ -113,7 +113,7 @@ const SuggestPage = () => {
 
     try {
       const API_BASE_URL = "https://moyak.store";
-      const response = await axios.post(`${API_BASE_URL}/api/preprocess/analyze`, {
+      const response = await axios.post(`${API_BASE_URL}/preprocess/analyze`, {
         title: formData.title,
         content: formData.description,
         category: formData.category,

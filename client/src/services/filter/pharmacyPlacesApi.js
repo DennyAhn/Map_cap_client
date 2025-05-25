@@ -5,8 +5,8 @@ export const fetchPharmacyPlacesData = async (lat, lng) => {
         lat: lat,
         lng: lng
       });
-      const PROXY_URL = 'https://moyak.store';
-      const response = await fetch(`${PROXY_URL}/api/pharmacyPlaces?${params}`);
+       const API_BASE_URL = 'https://moyak.store';
+      const response = await fetch(`${API_BASE_URL}/api/pharmacyPlaces?${params}`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch pharmacy places: ${response.status}`);

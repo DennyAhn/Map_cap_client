@@ -160,16 +160,17 @@ class MarkerService {
     });
 
     // 닫기 버튼 이벤트 추가
-    naver.maps.Event.addListener(infoWindow, 'domready', () => {
-      const closeButtons = document.getElementsByClassName('close-btn');
-      if (closeButtons && closeButtons.length > 0) {
-        const closeBtn = closeButtons[closeButtons.length - 1]; // 가장 최근에 생성된 버튼
-        closeBtn.addEventListener('click', () => {
-          infoWindow.close();
-          this.activeInfoWindow = null;
-        });
-      }
-    });
+     naver.maps.Event.addListener(infoWindow, 'domready', () => {
+    const closeButtons = document.getElementsByClassName('close-btn');
+    if (closeButtons && closeButtons.length > 0) {
+      const closeBtn = closeButtons[closeButtons.length - 1]; // 가장 최근에 생성된 버튼
+      closeBtn.addEventListener('click', () => {
+        infoWindow.close();
+        this.activeInfoWindow = null;
+      });
+    }
+  });
+
 
     // 지도 줌 레벨에 따른 정보창 크기 조절
     naver.maps.Event.addListener(mapInstance, 'zoom_changed', () => {
@@ -363,22 +364,24 @@ class MarkerService {
           사용가능
         </span>`); 
         break;
-      case 'CCTV': 
-        items.push(`<span style="color: #34a853; display: inline-flex; align-items: center;">
-          <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">
-            <path fill="#34a853" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-          </svg>
-          24시간
-        </span>`); 
-        break;
-      case '지하철역 엘리베이터': 
-        items.push(`<span style="display: inline-flex; align-items: center;">
-          <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">
-            <path fill="#fbbc05" d="M7 2l4 4H8v3H6V6H3l4-4zm10 16l-4-4h3v-3h2v3h3l-4 4zm-2-5V9h-2v4h2zm-4-4V5H9v4h2zm0 6v4h2v-4h-2zm-4 0v4h2v-4H7z"/>
-          </svg>
-          상세 정보 제공 준비 중
-        </span>`); 
-        break;
+      case 'CCTV':
+    items.push(`<span style="color: #34a853; display: inline-flex; align-items: center; font-weight: bold;">
+      <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">
+        <path fill="#34a853" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+      </svg>
+      24시간 감시중
+    </span>`);
+    break;
+ 
+  case '지하철역 엘리베이터':
+    items.push(`<span style="display: inline-flex; align-items: center; font-weight: bold; color: #1E88E5;">
+      <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">
+        <path fill="#1E88E5" d="M7 2l4 4H8v3H6V6H3l4-4zm10 16l-4-4h3v-3h2v3h3l-4 4zm-2-5V9h-2v4h2zm-4-4V5H9v4h2zm0 6v4h2v-4h-2zm-4 0v4h2v-4H7z"/>
+      </svg>
+      엘리베이터 이용 가능
+    </span>`);
+    break;
+
       case '심야약국': 
         items.push(`<span style="display: inline-flex; align-items: center;">
           <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">

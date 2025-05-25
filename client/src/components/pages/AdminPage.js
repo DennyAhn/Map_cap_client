@@ -8,6 +8,7 @@ import styles from './AdminPage.module.css'; // ✅ 수정된 모듈 스타일
 import AdminDangerMap from './AdminDangerMap';
 
 
+
 ChartJS.register(BarElement, CategoryScale, LinearScale, ArcElement, Tooltip, Legend);
 
 const AdminPage = () => {
