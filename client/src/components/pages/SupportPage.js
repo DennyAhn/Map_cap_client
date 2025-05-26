@@ -27,7 +27,7 @@ const SupportPage = () => {
     
     try {
       const API_BASE_URL = "https://moyak.store";
-      await axios.post(`${API_BASE_URL}/feature-issues`, {
+      await axios.post(`${API_BASE_URL}/api/feature-issues`, {
         title: inquiryType,
         content: inquiryContent
       });
