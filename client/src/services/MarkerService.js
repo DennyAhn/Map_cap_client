@@ -2,59 +2,44 @@
 
 class MarkerService {
   constructor() {
-    this.markers = new Map(); // 카테고리별 마커 저장
-    this.activeInfoWindow = null; // 현재 열린 정보창 저장
-    this.infoWindows = new Map(); // 마커별 정보창 캐시
-    this.clickTimeout = null; // 클릭 디바운스를 위한 타이머
-    this.addressCache = new Map(); // 주소 캐시 추가
+    this.markers = new Map();
+    this.activeInfoWindow = null;
+    this.infoWindows = new Map();
+    this.clickTimeout = null;
+    this.addressCache = new Map();
   }
 
-  // 마커 추가/제거 토글 메서드
   toggleMarkers(mapInstance, places, category) {
-    // 디바운스 처리
     if (this.toggleTimeout) {
       clearTimeout(this.toggleTimeout);
     }
 
     return new Promise((resolve) => {
       this.toggleTimeout = setTimeout(() => {
-        console.log(`마커 토글: ${category}, 장소 수: ${places.length}`);
-        
-        // 이미 해당 카테고리의 마커가 있다면 모두 제거
         if (this.markers.has(category)) {
-          console.log(`기존 마커 제거: ${category}`);
           const markers = this.markers.get(category);
-          
-          // 한 번에 모든 마커와 정보창 제거
           if (this.activeInfoWindow) {
             this.activeInfoWindow.close();
             this.activeInfoWindow = null;
           }
-
-          // 마커 일괄 제거
           markers.forEach(marker => {
             this.infoWindows.delete(marker);
             marker.setMap(null);
           });
-
           this.markers.delete(category);
         }
 
-        // 새로운 마커 일괄 생성 및 추가
-        console.log(`새 마커 생성: ${category}, 장소 수: ${places.length}`);
         const newMarkers = places.map(place => {
           const marker = this.createMarker(mapInstance, place, category);
           const infoWindow = this.createInfoWindow(mapInstance, place, category);
           this.infoWindows.set(marker, infoWindow);
-          this.addMarkerClickEvent(marker, infoWindow, mapInstance);
+          this.addMarkerClickEvent(marker, infoWindow, mapInstance, place, category);
           return marker;
         });
 
-        // 마커 일괄 추가
         this.markers.set(category, newMarkers);
-        console.log(`마커 토글 완료: ${category}, 생성된 마커 수: ${newMarkers.length}`);
         resolve(true);
-      }, 10); // 디바운스 시간을 10ms로 줄임
+      }, 10);
     });
   }
 
@@ -75,6 +60,7 @@ class MarkerService {
   // 정보창 생성 메서드
   createInfoWindow(mapInstance, place, category) {
     const uniqueId = `place-info-${place.latitude}-${place.longitude}`.replace(/\./g, '-');
+    const closeButtonId = `close-btn-${place.latitude}-${place.longitude}`.replace(/\./g, '-');
     
     const infoWindow = new naver.maps.InfoWindow({
       content: `
@@ -90,9 +76,8 @@ class MarkerService {
           border: none;
           font-size: 11px;
           margin-bottom: 12px;
-          overflow: hidden;
         ">
-          <div class="close-btn" style="
+          <div id="${closeButtonId}" class="close-btn" style="
             position: absolute;
             top: 4px;
             right: 4px;
@@ -109,6 +94,7 @@ class MarkerService {
             line-height: 1;
             z-index: 1;
             transition: all 0.2s ease;
+            pointer-events: auto;
           ">&times;</div>
           <div style="
             position: absolute;
@@ -154,23 +140,57 @@ class MarkerService {
       disableAnchor: true,
       backgroundColor: 'transparent',
       borderColor: 'transparent',
-      pixelOffset: new naver.maps.Point(0, -45),
       zIndex: 100,
       closeButton: false
     });
 
-    // 닫기 버튼 이벤트 추가
-     naver.maps.Event.addListener(infoWindow, 'domready', () => {
-    const closeButtons = document.getElementsByClassName('close-btn');
-    if (closeButtons && closeButtons.length > 0) {
-      const closeBtn = closeButtons[closeButtons.length - 1]; // 가장 최근에 생성된 버튼
-      closeBtn.addEventListener('click', () => {
-        infoWindow.close();
-        this.activeInfoWindow = null;
-      });
-    }
-  });
+    // 닫기 버튼 이벤트 추가 - 방법 개선
+    const handleDomready = () => {
+      setTimeout(() => {
+        const closeBtn = document.getElementById(closeButtonId);
+        if (closeBtn) {
+          // 이벤트 리스너를 제거하고 다시 추가하여 중복 이벤트 방지
+          closeBtn.removeEventListener('click', closeInfoWindow);
+          closeBtn.addEventListener('click', closeInfoWindow);
+          
+          // 터치 이벤트도 추가 (모바일 대응)
+          closeBtn.removeEventListener('touchend', closeInfoWindow);
+          closeBtn.addEventListener('touchend', closeInfoWindow);
+          
+          // 시각적 피드백 추가
+          closeBtn.addEventListener('mouseover', () => {
+            closeBtn.style.backgroundColor = '#eee';
+            closeBtn.style.color = '#666';
+          });
+          
+          closeBtn.addEventListener('mouseout', () => {
+            closeBtn.style.backgroundColor = '#f8f8f8';
+            closeBtn.style.color = '#aaa';
+          });
+        }
+      }, 100); // 약간의 지연시간을 두어 DOM이 완전히 준비되도록 함
+    };
+    
+    const closeInfoWindow = (e) => {
+      e.stopPropagation(); // 이벤트 버블링 방지
+      infoWindow.close();
+      this.activeInfoWindow = null;
+    };
 
+    // domready 이벤트 연결
+    naver.maps.Event.addListener(infoWindow, 'domready', handleDomready);
+
+    // 정보창이 열릴 때 이벤트도 다시 연결 (보험)
+    naver.maps.Event.addListener(infoWindow, 'open', () => {
+      handleDomready();
+      
+      this.loadKoreanAddress(place.latitude, place.longitude).then(address => {
+        const infoContent = document.getElementById(uniqueId);
+        if (infoContent) {
+          infoContent.innerHTML = this.getKoreanPlaceInfo(category, place, address);
+        }
+      });
+    });
 
     // 지도 줌 레벨에 따른 정보창 크기 조절
     naver.maps.Event.addListener(mapInstance, 'zoom_changed', () => {
@@ -199,49 +219,93 @@ class MarkerService {
       }
     });
 
-    // 기존 주소 정보 비동기 로드 로직 유지
-    naver.maps.Event.addListener(infoWindow, 'open', () => {
-      this.loadKoreanAddress(place.latitude, place.longitude).then(address => {
-        const infoContent = document.getElementById(uniqueId);
-        if (infoContent) {
-          infoContent.innerHTML = this.getKoreanPlaceInfo(category, place, address);
-        }
-      });
-    });
-
     return infoWindow;
   }
 
   // 마커 클릭 이벤트 추가 메서드
-  addMarkerClickEvent(marker, infoWindow, mapInstance) {
+  addMarkerClickEvent(marker, infoWindow, mapInstance, place, category) {
     let clickCount = 0;
     let clickTimer = null;
-
+  
+    // 최초 클릭 여부를 마커에 저장
+    marker.__firstClicked = false;
+  
     naver.maps.Event.addListener(marker, 'click', () => {
       clickCount++;
-      
-      if (clickTimer) {
-        clearTimeout(clickTimer);
-      }
-
-      clickTimer = setTimeout(() => {
+      if (clickTimer) clearTimeout(clickTimer);
+  
+      clickTimer = setTimeout(async () => {
         if (clickCount === 1) {
-          // 단일 클릭
           if (this.activeInfoWindow === infoWindow) {
             infoWindow.close();
             this.activeInfoWindow = null;
+            
+            // 정보창이 닫힐 때 현재 위치 버튼 위치 복원
+            const moveToCurrentBtn = document.querySelector('.move-to-current-button');
+            if (moveToCurrentBtn) {
+              moveToCurrentBtn.classList.remove('panel-open');
+            }
           } else {
             if (this.activeInfoWindow) {
               this.activeInfoWindow.close();
             }
+  
+            const uniqueId = `place-info-${place.latitude}-${place.longitude}`.replace(/\./g, '-');
+            const address = await this.loadKoreanAddress(place.latitude, place.longitude);
+            const infoContent = document.getElementById(uniqueId);
+            if (infoContent) {
+              infoContent.innerHTML = this.getKoreanPlaceInfo(category, place, address);
+            }
+  
+            // 최초 클릭이면 살짝 위로 이동시켜서 표시
+            if (!marker.__firstClicked) {
+              infoWindow.setOptions({
+                pixelOffset: new naver.maps.Point(0, -43)
+              });
+              marker.__firstClicked = true;
+            } else {
+              infoWindow.setOptions({
+                pixelOffset: new naver.maps.Point(0, 0)
+              });
+            }
             infoWindow.open(mapInstance, marker);
+
             this.activeInfoWindow = infoWindow;
+            
+            // 정보창이 열릴 때 현재 위치 버튼 위치 조정
+            const moveToCurrentBtn = document.querySelector('.move-to-current-button');
+            if (moveToCurrentBtn) {
+              moveToCurrentBtn.classList.add('panel-open');
+            }
           }
         }
         clickCount = 0;
       }, 200);
     });
+  
+    // close 버튼은 기존과 동일
+    naver.maps.Event.addListener(infoWindow, 'domready', () => {
+      const container = infoWindow.getElement();
+      if (!container) return;
+    
+      const closeBtn = container.querySelector('.close-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          infoWindow.close();
+          this.activeInfoWindow = null;
+          
+          // 정보창이 닫힐 때 현재 위치 버튼 위치 복원
+          const moveToCurrentBtn = document.querySelector('.move-to-current-button');
+          if (moveToCurrentBtn) {
+            moveToCurrentBtn.classList.remove('panel-open');
+          }
+        });
+      }
+    });
   }
+  
+
 
   // 마커 제거 메서드
   removeMarkers(category) {
@@ -292,7 +356,7 @@ class MarkerService {
       '안전비상벨': '/images/icon/women/siren.png',
       'CCTV': '/images/icon/women/cctv.png',
       '지하철역 엘리베이터': '/images/icon/old/ele.png',
-      '심야약국': '/images/icon/old/drugstore.png',
+      '약국': '/images/icon/old/drugstore.png',
       '휠체어 충전소': '/images/icon/old/charge.png',
       '복지시설': '/images/icon/old/noin.png',
       '외국인 주의구역': '/images/icon/normal/warning.png'
@@ -320,7 +384,6 @@ class MarkerService {
     // 핵심 정보만 표시하도록 간소화
     const items = [];
     
-    // 거리 정보 추가 (항상 가장 중요)
     if (place.distance) {
       items.push(`<span style="color: #4285f4; font-weight: 500; display: inline-flex; align-items: center;">
         <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">
@@ -329,6 +392,37 @@ class MarkerService {
         ${place.distance}
       </span>`);
     }
+    
+    // 길찾기 버튼 추가
+    const findRouteButton = `
+      <div class="find-route-btn" 
+        data-lat="${place.latitude}" 
+        data-lng="${place.longitude}" 
+        data-name="${place.name || category}"
+        style="
+          position: absolute;
+          top: 10px;
+          right: 28px;
+          background-color: #4285f4;
+          color: white;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 10px;
+          cursor: pointer;
+          font-weight: 500;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2;
+        "
+      >
+        <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 3px;">
+          <path fill="white" d="M21.71 11.29l-9-9a.996.996 0 00-1.41 0l-9 9a.996.996 0 000 1.41l9 9c.39.39 1.02.39 1.41 0l9-9a.996.996 0 000-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/>
+        </svg>
+        길찾기
+      </div>
+    `;
     
     // 카테고리별 핵심 정보 추가 (아이콘 포함)
     switch(category) {
@@ -364,25 +458,23 @@ class MarkerService {
           사용가능
         </span>`); 
         break;
-      case 'CCTV':
-    items.push(`<span style="color: #34a853; display: inline-flex; align-items: center; font-weight: bold;">
-      <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">
-        <path fill="#34a853" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-      </svg>
-      24시간 감시중
-    </span>`);
-    break;
- 
-  case '지하철역 엘리베이터':
-    items.push(`<span style="display: inline-flex; align-items: center; font-weight: bold; color: #1E88E5;">
-      <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">
-        <path fill="#1E88E5" d="M7 2l4 4H8v3H6V6H3l4-4zm10 16l-4-4h3v-3h2v3h3l-4 4zm-2-5V9h-2v4h2zm-4-4V5H9v4h2zm0 6v4h2v-4h-2zm-4 0v4h2v-4H7z"/>
-      </svg>
-      엘리베이터 이용 가능
-    </span>`);
-    break;
-
-      case '심야약국': 
+      case 'CCTV': 
+        items.push(`<span style="color: #34a853; display: inline-flex; align-items: center;">
+          <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">
+            <path fill="#34a853" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+          </svg>
+          24시간
+        </span>`); 
+        break;
+      case '지하철역 엘리베이터': 
+        items.push(`<span style="display: inline-flex; align-items: center;">
+          <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">
+            <path fill="#fbbc05" d="M7 2l4 4H8v3H6V6H3l4-4zm10 16l-4-4h3v-3h2v3h3l-4 4zm-2-5V9h-2v4h2zm-4-4V5H9v4h2zm0 6v4h2v-4h-2zm-4 0v4h2v-4H7z"/>
+          </svg>
+          상세 정보 제공 준비 중
+        </span>`); 
+        break;
+      case '약국': 
         items.push(`<span style="display: inline-flex; align-items: center;">
           <svg width="10" height="10" viewBox="0 0 24 24" style="margin-right: 4px;">
             <path fill="#ea4335" d="M6 3h12v2H6zm11 3H7c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-1 9h-2.5v2.5h-3V15H8v-3h2.5V9.5h3V12H16v3z"/>
@@ -434,7 +526,9 @@ class MarkerService {
           gap: 6px;
           font-size: 10px;
           padding: 2px 0;
+          position: relative;
         ">
+          ${findRouteButton}
           ${items.map(item => 
             `<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item}</div>`
           ).join('')}
@@ -442,7 +536,12 @@ class MarkerService {
       `;
     } else {
       // 정보가 없을 경우 간단한 메시지
-      info = `<div style="text-align: center; color: #888; font-size: 10px; padding: 4px 0;">상세 정보 제공 준비 중</div>`;
+      info = `
+        <div style="text-align: center; color: #888; font-size: 10px; padding: 4px 0; position: relative;">
+          ${findRouteButton}
+          상세 정보 제공 준비 중
+        </div>
+      `;
     }
     
     return info;
@@ -503,6 +602,44 @@ class MarkerService {
       this.addressCache.set(cacheKey, '주소 정보를 불러올 수 없습니다.');
       return null;
     }
+  }
+
+  // 길찾기 버튼 클릭 이벤트 처리 함수 추가
+  handleFindRouteClick(mapInstance) {
+    document.addEventListener('click', (e) => {
+      const findRouteBtn = e.target.closest('.find-route-btn');
+      if (findRouteBtn) {
+        e.stopPropagation();
+        
+        const lat = findRouteBtn.getAttribute('data-lat');
+        const lng = findRouteBtn.getAttribute('data-lng');
+        const name = findRouteBtn.getAttribute('data-name');
+        
+        if (lat && lng) {
+          // 현재 위치 가져오기
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const startCoords = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+              };
+              
+              const destinationCoords = {
+                latitude: parseFloat(lat),
+                longitude: parseFloat(lng)
+              };
+              
+              // 경로 선택 화면으로 이동
+              window.location.href = `/route?startLat=${startCoords.latitude}&startLng=${startCoords.longitude}&goalLat=${destinationCoords.latitude}&goalLng=${destinationCoords.longitude}&destName=${encodeURIComponent(name)}`;
+            },
+            (error) => {
+              console.error('위치 정보를 가져올 수 없습니다:', error);
+              alert('위치 정보를 가져올 수 없습니다. 위치 권한을 확인해주세요.');
+            }
+          );
+        }
+      }
+    });
   }
 }
 
