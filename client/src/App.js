@@ -218,7 +218,7 @@ const App = () => {
           />
 
           {/* 건의함 페이지 */}
-          <Route path="/suggest" element={<SuggestTabsPage />} />
+          <Route path="/suggest" element={<SuggestionsPage />} />
           {/* 관리자 페이지 */}
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/danger-map" element={<AdminDangerMap />} />
