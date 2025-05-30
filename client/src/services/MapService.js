@@ -132,11 +132,11 @@ class MapService {
             position: absolute;
             width: 0;
             height: 0;
-            border-left: 2px solid transparent;
-            border-right: 2px solid transparent;
-            border-bottom: 4px solid ${arrowColor};
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 8px solid ${arrowColor};
             top: -4px;
-            left: calc(50% - 2px);
+            left: calc(50% - 4px);
           "></div>
         </div>
       </div>`,

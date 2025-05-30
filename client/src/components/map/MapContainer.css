@@ -195,10 +195,9 @@
     transition: bottom 0.3s ease-in-out;
   }
   
-  /* 패널이 열려있을 때 버튼 위치 조정 */
+
   .move-to-current-button.panel-open {
-    bottom: 40vh; /* 패널 높이(35vh)보다 약간 위에 위치 */
-    z-index: 1100; /* 패널보다 위에 표시되도록 z-index 높임 */
+    bottom: 350px; 
   }
   
   .move-to-current-button.active::before {
@@ -300,6 +299,45 @@
     flex: 1;
   }
   
+  /* 리스트 아이템 길찾기 버튼 스타일 */
+  .list-item-route-button {
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 6px 12px;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: 500;
+    box-shadow: 0px 4px 6px -3px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  
+  .list-item-route-button:hover {
+    background-color: #5c96f5;
+    transform: translateY(-1px);
+    box-shadow: 0px 5px 8px -3px rgba(0, 0, 0, 0.3);
+  }
+  
+  .list-item-route-button:active {
+    background-color: #3367d6;
+    transform: translateY(0);
+    box-shadow: 0px 3px 5px -3px rgba(0, 0, 0, 0.3);
+  }
+  
+  .list-item-route-button svg {
+    margin-right: 0;
+    width: 14px;
+    height: 14px;
+  }
+  
   .list-item-title {
     margin: 0 0 8px;
     font-size: 15px;
@@ -317,12 +355,6 @@
     margin: 0 0 4px;
     font-size: 13px;
     color: #666;
-  }
-  
-  .list-item-visitors {
-    margin: 0;
-    font-size: 12px;
-    color: #888;
   }
   
   /* 모바일 최적화 */
