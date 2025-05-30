@@ -10,6 +10,7 @@ const SuggestPage = () => {
   const location = useLocation();
   const mapRef = useRef(null);
   const [mapVisible, setMapVisible] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
    
 
   const [formData, setFormData] = useState({
@@ -19,6 +20,11 @@ const SuggestPage = () => {
     description: '',
     photos: [],
     contact: ''
+  });
+
+  const [coords, setCoords] = useState({
+    start: null,
+    end: null
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -122,7 +128,7 @@ const SuggestPage = () => {
 
       console.log('전처리 결과:', response.data.keywords);
       setSubmitted(true);
-
+      setShowSuccessPopup(true);
       setFormData({
         title: '',
         category: '',
@@ -137,8 +143,17 @@ const SuggestPage = () => {
     } catch (error) {
       console.error('건의 제출 중 오류:', error);
       console.log('건의 제출에 실패했습니다.');
+      
     }
+    
   };
+    const closeSuccessPopup = () => {
+    setShowSuccessPopup(false);
+    setSubmitted(false);
+    // Optionally navigate back to home or another page
+    // navigate('/');
+  };
+  
 
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -232,11 +247,7 @@ const SuggestPage = () => {
           건의 제출하기
         </button>
 
-        {submitted && (
-          <div className="success-message">
-            ✅ 건의사항이 성공적으로 제출되었습니다
-          </div>
-        )}
+        
       </form>
 
       {mapVisible && (
@@ -244,6 +255,17 @@ const SuggestPage = () => {
           <div className="map-popup-box">
             <button className="close-map-btn" onClick={() => setMapVisible(false)}>✖ 닫기</button>
             <div ref={mapRef} className="select-map"></div>
+          </div>
+        </div>
+      )}
+      {showSuccessPopup && (
+        <div className="success-popup-overlay">
+          <div className="success-popup-box">
+            <h2>✅ 제출 완료</h2>
+            <p>건의사항이 성공적으로 제출되었습니다.</p>
+            <button className="close-success-btn" onClick={closeSuccessPopup}>
+              확인
+            </button>
           </div>
         </div>
       )}
