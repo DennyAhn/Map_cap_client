@@ -1,5 +1,5 @@
 // src/components/map/MapContainer.js
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import NaverMap from './NaverMap';
 import MenuPanel from '../panels/MenuPanel';
 import './MapContainer.css';
@@ -54,13 +54,10 @@ const MapContainer = ({
   const [error, setError] = useState(null);
   const mapServiceRef = useRef(null);
 
-  useEffect(() => {
-    setShowListPanel(activeFilters.length > 0);
-  }, [activeFilters]);
-
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
 
-  // API에서 데이터 가져오기
+
+  // API에서 데이터 가져오기 (중복 요청 방지 및 캐싱 기능이 포함된 최적화 버전)
   const fetchCategoryData = async (category) => {
     setIsLoading(true);
     setError(null);
@@ -214,9 +211,12 @@ const MapContainer = ({
     }
   };
 
-  const handleFilterClick = async (filterText) => {
-    // 같은 카테고리를 다시 클릭하는 경우
-    if (selectedCategory === filterText && showListPanel) {
+  const handleFilterClick = async (filterText, options = {}) => {
+    // options 객체에서 fromDragEvent 플래그 추출 (지도 드래그 이벤트에서 호출된 경우)
+    const { fromDragEvent = false } = options;
+    
+    // 같은 카테고리를 다시 클릭하는 경우 및 드래그 이벤트가 아닌 경우에만 패널 토글
+    if (selectedCategory === filterText && showListPanel && !fromDragEvent) {
       // 리스트 패널 닫기
       setShowListPanel(false);
       setSelectedCategory(null);
@@ -224,18 +224,26 @@ const MapContainer = ({
       // 필터에서도 제거하여 마커 삭제 트리거
       setActiveFilters(prev => prev.filter(f => f !== filterText));
     } else {
-      // 다른 카테고리를 클릭하는 경우
+      // 먼저 필터 상태 업데이트하여 마커가 즉시 표시되도록 함
+      if (!fromDragEvent) {
+        setActiveFilters([filterText]);
+      }
       
-      // 모든 기존 필터 제거하고 새 필터만 추가 (한 번에 하나의 카테고리만 표시)
-      setActiveFilters([filterText]);
-      
-      // 리스트 패널 설정
-      setSelectedCategory(filterText);
-      setShowListPanel(true);
-      setListPanelData([]); // 로딩 전 초기화
+      // 로딩 상태 설정 (기존 데이터는 유지하면서 로딩 인디케이터 표시)
+      setIsLoading(true);
       
       try {
+        // 데이터 가져오기
         const data = await fetchCategoryData(filterText);
+        
+        // 이미 선택된 카테고리와 같고 패널이 열려있는 경우, 드래그 이벤트에서는 데이터만 업데이트
+        if (selectedCategory === filterText && showListPanel) {
+          // 데이터만 업데이트하고 패널 상태는 유지
+        } else if (!fromDragEvent) {
+          // 새 카테고리 선택 시 또는 패널이 닫혀있는 경우에만 패널 열기
+          setSelectedCategory(filterText);
+          setShowListPanel(true);
+        }
         
         if (data && data.length > 0) {
           console.log(`리스트 패널 데이터 설정: ${data.length}개 항목`);
@@ -255,93 +263,53 @@ const MapContainer = ({
       } catch (err) {
         console.error(`필터 데이터 가져오기 실패: ${err.message}`);
         setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
-
+    }
+    
+    // 현재 위치 버튼과 유사하게 지도 중심을 현재 위치로 유지
+    if (mapServiceRef.current?.getMapInstance && !fromDragEvent) {
+      const mapInstance = mapServiceRef.current.getMapInstance();
+      if (mapInstance) {
+        // 현재 중심 위치를 유지하되 약간의 줌 효과 적용하여 사용자에게 피드백 제공
+        const currentZoom = mapInstance.getZoom();
+        if (currentZoom < 15) {
+          mapInstance.setZoom(15, true); // 줌이 낮으면 적정 레벨로 조정
+        }
+      }
     }
   };
-  
-
 
   const handleMoveToCurrent = () => {
     setIsLocationButtonActive(true);
   
     if (mapServiceRef.current) {
-      // 현재 위치로 이동하고 위치 추적 모드를 Follow로 설정
-      mapServiceRef.current.moveToCurrentLocation();
+      // 현재 위치로만 이동하고 마커나 패널은 유지
+      const currentLocation = mapServiceRef.current.getCurrentLocation();
       
-      // 명시적으로 위치 추적 모드를 Follow로 설정 (이미 moveToCurrentLocation에 포함되어 있지만 명확하게 표시)
-      if (mapServiceRef.current.setLocationTrackingMode) {
-        console.log('위치 추적 모드를 Follow로 설정합니다.');
-        mapServiceRef.current.setLocationTrackingMode('Follow');
+      if (currentLocation) {
+        // 지도 중심만 현재 위치로 이동 (마커와 패널 상태는 변경하지 않음)
+        mapServiceRef.current.panTo(currentLocation, 17);
+      } else {
+        // 현재 위치를 가져올 수 없는 경우에만 moveToCurrentLocation 호출
+        mapServiceRef.current.moveToCurrentLocation();
       }
       
-      // iOS 디바이스에서 방향 권한 요청
-      if (mapServiceRef.current.requestOrientationPermission) {
-        mapServiceRef.current.requestOrientationPermission();
+      // 필터나 패널 상태는 변경하지 않음 - 이 부분이 중요!
+      // 기존 코드에서 handleFilterClick 호출 부분을 제거
+
+      // 필요하다면 그냥 현재 위치로만 부드럽게 이동
+      const mapInstance = mapServiceRef.current.getMapInstance();
+      if (mapInstance) {
+        const currentZoom = mapInstance.getZoom();
+        if (currentZoom < 15) {
+          mapInstance.setZoom(15, true);
+        }
       }
     }
     
     setTimeout(() => setIsLocationButtonActive(false), 3000);
-  };
-
-  // 길찾기 버튼 클릭 핸들러 추가
-  const handleRouteButtonClick = (item) => {
-    console.log('길찾기 버튼 클릭:', item);
-    
-    // item의 구조 확인
-    let destinationLat, destinationLng;
-    
-    if (item.coords && item.coords.latitude && item.coords.longitude) {
-      // coords 객체 내에 좌표가 있는 경우
-      destinationLat = item.coords.latitude;
-      destinationLng = item.coords.longitude;
-    } else if (item.latitude && item.longitude) {
-      // 최상위 속성으로 좌표가 있는 경우
-      destinationLat = item.latitude;
-      destinationLng = item.longitude;
-    } else {
-      console.error('목적지 좌표를 찾을 수 없습니다:', item);
-      alert('목적지 좌표 정보가 없어 길찾기를 사용할 수 없습니다.');
-      return;
-    }
-    
-    // 현재 위치 가져오기
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const startCoords = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        };
-        
-        // 대상명 인코딩
-        const destinationName = encodeURIComponent(item.name || selectedCategory);
-        
-        console.log('길찾기 정보:', {
-          출발: `${startCoords.latitude}, ${startCoords.longitude}`,
-          도착: `${destinationLat}, ${destinationLng}`,
-          목적지명: destinationName
-        });
-        
-        // 메인 페이지에서 상태 변수로 처리되는 방식이므로 세션 스토리지 사용
-        sessionStorage.setItem('route_start_lat', startCoords.latitude);
-        sessionStorage.setItem('route_start_lng', startCoords.longitude);
-        sessionStorage.setItem('route_goal_lat', destinationLat);
-        sessionStorage.setItem('route_goal_lng', destinationLng);
-        sessionStorage.setItem('route_dest_name', destinationName);
-        
-        // 메인 페이지로 이동
-        window.location.href = '/';
-      },
-      (error) => {
-        console.error('위치 정보를 가져올 수 없습니다:', error);
-        alert('위치 정보를 가져올 수 없습니다. 위치 권한을 확인해주세요.');
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
   };
 
   return (
@@ -445,8 +413,9 @@ const MapContainer = ({
         onClick={handleMoveToCurrent}
       >
         <img src="/images/RouteSelectionScreen/location.svg" alt="현재 위치로 이동" />
+        
       </button>
-      
+
       {/* 카테고리 리스트 패널 */}
       {showListPanel && (
         <div className="list-panel">
@@ -496,19 +465,6 @@ const MapContainer = ({
                         <p className="list-item-category">분류: {item.category}</p>
                       )}
                     </div>
-                    
-                    {/* 길찾기 버튼 추가 */}
-                    {item.latitude && item.longitude && (
-                      <button 
-                        className="list-item-route-button"
-                        onClick={() => handleRouteButtonClick(item)}
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24">
-                          <path fill="white" d="M21.71 11.29l-9-9a.996.996 0 00-1.41 0l-9 9a.996.996 0 000 1.41l9 9c.39.39 1.02.39 1.41 0l9-9a.996.996 0 000-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/>
-                        </svg>
-                        길찾기
-                      </button>
-                    )}
                   </div>
                 );
               })
