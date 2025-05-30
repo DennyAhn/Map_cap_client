@@ -10,6 +10,7 @@ const RiskReportPage = () => {
   const [mapVisible, setMapVisible] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [activeLocationField, setActiveLocationField] = useState(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const [formData, setFormData] = useState({
     category: '',
@@ -137,7 +138,11 @@ const RiskReportPage = () => {
       console.error('건의 제출 중 오류:', error);
     }
   };
-
+  const closeSuccessPopup = () => {
+    setShowSuccessPopup(false);
+    // 필요하다면 홈으로 이동
+    // navigate('/');
+  };
   return (
     <div className="report-container">
       <h1 className="report-title">⚠️ 위험경로 제보</h1>
@@ -266,26 +271,29 @@ const RiskReportPage = () => {
           위험구역 제보하기
         </button>
 
-        {submitted && (
-          <div className="success-message">
-            ✅ 의견이 성공적으로 제출되었습니다
-          </div>
-        )}
+        
       </form>
 
       {mapVisible && (
         <div className="map-popup-overlay">
           <div className="map-popup-box">
-            <button className="close-map-btn" onClick={() => {
-              setMapVisible(false);
-              setActiveLocationField(null);
-            }}>
-              ✖ 닫기
-            </button>
             <div ref={mapRef} className="select-map"></div>
           </div>
         </div>
       )}
+
+      {showSuccessPopup && (
+        <div className="success-popup-overlay">
+          <div className="success-popup-box">
+            <h2>✅ 제출 완료</h2>
+            <p>위험경로 제보가 성공적으로 제출되었습니다.</p>
+            <button className="close-success-btn" onClick={closeSuccessPopup}>
+              확인
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
