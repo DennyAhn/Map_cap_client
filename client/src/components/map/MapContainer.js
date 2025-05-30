@@ -1,5 +1,5 @@
 // src/components/map/MapContainer.js
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import NaverMap from './NaverMap';
 import MenuPanel from '../panels/MenuPanel';
 import './MapContainer.css';
