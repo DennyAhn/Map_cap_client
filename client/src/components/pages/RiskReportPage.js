@@ -114,6 +114,7 @@ const RiskReportPage = () => {
       });
 
       setSubmitted(true);
+      setShowSuccessPopup(true);
 
       setFormData({
         category: '',
