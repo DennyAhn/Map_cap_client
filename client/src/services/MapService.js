@@ -628,7 +628,7 @@ class MapService {
   getLocationTrackingMode() {
     return this.locationTrackingMode;
   }
-}
+
   // 지도 새로고침 함수
   refresh(clearCache = true) {
     console.log('지도 강제 새로고침 실행');
@@ -659,5 +659,6 @@ class MapService {
       }, 100);
     }
   }
+}
 
 export default MapService;
