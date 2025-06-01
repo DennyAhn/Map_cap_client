@@ -4,6 +4,7 @@ import RiskReportPage from './RiskReportPage';
 import SuggestPage from './SuggestPage';
 import './SuggestTabPage.css';
 
+
 const SuggestTabsPage = () => {
   const [activeTab, setActiveTab] = useState('facility');
   const navigate = useNavigate();

@@ -38,11 +38,9 @@ class MapService {
       console.log('Current zoom level:', zoomLevel);
     });
 
-    // 지도 이동 시 이벤트 - 추적 모드가 활성화된 경우 NoFollow 모드로 변경
     naver.maps.Event.addListener(this.mapInstance, 'dragend', () => {
-      if (this.locationTrackingMode === 'Follow') {
-        this.setLocationTrackingMode('NoFollow');
-      }
+     
+      console.log('지도 드래그 감지 - 실시간 추적 모드에서는 추적을 유지합니다.');
     });
 
     // 초기 위치 설정 - 점진적 접근법 사용
@@ -215,8 +213,8 @@ class MapService {
       },
       {
         enableHighAccuracy: true,
-        maximumAge: 5000,
-        timeout: 10000
+        maximumAge: 0,
+        timeout: 5000
       }
     );
   }
@@ -299,8 +297,8 @@ class MapService {
     return new Promise((resolve, reject) => {
       const options = {
         enableHighAccuracy: highAccuracy,
-        timeout: highAccuracy ? 15000 : 5000, // 고정밀 모드는 더 긴 타임아웃
-        maximumAge: highAccuracy ? 0 : 60000 // 고정밀 모드는 캐시 사용 안 함
+        timeout: highAccuracy ? 10000 : 5000, // 고정밀 모드는 더 긴 타임아웃
+        maximumAge: highAccuracy ? 0 : 0 // 고정밀 모드는 캐시 사용 안 함
       };
       
       navigator.geolocation.getCurrentPosition(
@@ -631,5 +629,35 @@ class MapService {
     return this.locationTrackingMode;
   }
 }
+  // 지도 새로고침 함수
+  refresh(clearCache = true) {
+    console.log('지도 강제 새로고침 실행');
+    
+    // 캐시 초기화 (네이버 지도 API에서 지원하는 경우)
+    if (clearCache && naver.maps.Cache) {
+      naver.maps.Cache.clear();
+    }
+    
+    // 지도 타일 강제 재로드
+    if (this.mapInstance) {
+      const center = this.mapInstance.getCenter();
+      const zoom = this.mapInstance.getZoom();
+      
+      // 약간의 지연 시간을 두고 실행하여 DOM 업데이트 보장
+      setTimeout(() => {
+        // 지도 약간 이동 후 원위치 (강제 타일 리로드 트리거)
+        this.mapInstance.setCenter(new naver.maps.LatLng(
+          center.lat() + 0.0001, 
+          center.lng() + 0.0001
+        ));
+        
+        setTimeout(() => {
+          // 원래 위치로 복귀
+          this.mapInstance.setCenter(center);
+          this.mapInstance.setZoom(zoom);
+        }, 100);
+      }, 100);
+    }
+  }
 
 export default MapService;
