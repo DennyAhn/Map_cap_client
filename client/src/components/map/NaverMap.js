@@ -1,10 +1,26 @@
 /* global naver */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-/** services에서 import 경로 수정 */
+/* ───────── services import ───────── */
 import MapService from '../../services/MapService';
 import MarkerService from '../../services/MarkerService';
 import { getPlacesForFilter } from '../../services/placesApi';
+
+/* ──────────────────────────────────── */
+/* 0. 최근 좌표를 복구/폐기하는 헬퍼 함수  */
+/* ──────────────────────────────────── */
+const getSavedLocation = () => {
+  try {
+    const raw = sessionStorage.getItem('lastKnownLocation');
+    if (!raw) return null;
+    const { latitude, longitude, timestamp } = JSON.parse(raw);
+    // 48 시간이 지나면 폐기
+    if (Date.now() - timestamp > 1000 * 60 * 60 * 48) return null;
+    return { latitude, longitude };
+  } catch {
+    return null;
+  }
+};
 
 const NaverMap = ({
   selectedMode,
@@ -14,77 +30,88 @@ const NaverMap = ({
   onCurrentLocationUpdate,
   startLocation,
   mapServiceRef,
-  userLocation
+  userLocation,
 }) => {
-  const mapRef = useRef(null);
-  const mapService = useRef(null);
-  const markerService = useRef(null);
+  /* -------------------------------------------------------------- */
+  /*  1. 기본 상태 및 ref                                            */
+  /* -------------------------------------------------------------- */
+  const mapRef            = useRef(null);
+  const mapService        = useRef(null);
+  const markerService     = useRef(null);
+
   const [isMapReady, setIsMapReady] = useState(false);
+
   const prevActiveFilters = useRef(new Set());
-  const userLocationRef = useRef(null); // 최신 사용자 위치를 ref에 저장
+  const userLocationRef   = useRef(null); // 최신 위치 캐싱
 
-  /* ------------------------------------------------------------------ */
-  /* 1. 지도/서비스 초기화 (최초 1회)                                    */
-  /* ------------------------------------------------------------------ */
-
+  /* -------------------------------------------------------------- */
+  /*  2. 지도 + 서비스 초기화 (최초 1회)                              */
+  /* -------------------------------------------------------------- */
   useEffect(() => {
     let isSubscribed = true;
 
-    /* navermaps 스크립트가 로드될 때까지 대기 */
+    /* 2-1. 네이버맵 스크립트 로드 대기 */
     const waitForNaverMaps = () =>
       new Promise((resolve, reject) => {
-        if (window.naver && window.naver.maps) {
-          resolve();
-        } else {
-          let tries = 0;
-          const id = setInterval(() => {
-            if (window.naver && window.naver.maps) {
-              clearInterval(id);
-              resolve();
-            } else if (++tries > 20) {
-              clearInterval(id);
-              reject(new Error('Naver Maps API 로드 실패'));
-            }
-          }, 500);
-        }
+        if (window.naver && window.naver.maps) return resolve();
+        let tries = 0;
+        const id = setInterval(() => {
+          if (window.naver && window.naver.maps) {
+            clearInterval(id);
+            resolve();
+          } else if (++tries > 20) {
+            clearInterval(id);
+            reject(new Error('Naver Maps API 로드 실패'));
+          }
+        }, 500);
       });
 
+    /* 2-2. MapService·MarkerService 생성 */
+    const makeServices = (coords) => {
+      /* 인스턴스 생성 */
+      mapService.current    = new MapService(mapRef.current, coords);
+      markerService.current = new MarkerService();
+
+      if (mapServiceRef) mapServiceRef.current = mapService.current;
+
+      /* 처음 위치 마커 */
+      mapService.current.updateCurrentLocation(coords);
+
+      /* ★ 최근 좌표를 세션스토리지에 저장 */
+      try {
+        sessionStorage.setItem(
+          'lastKnownLocation',
+          JSON.stringify({ ...coords, timestamp: Date.now() })
+        );
+      } catch (_) { /* 저장 실패는 무시 */ }
+
+      if (isSubscribed) {
+        setIsMapReady(true);
+        onCurrentLocationUpdate?.(coords);
+      }
+    };
+
+    /* 2-3. 실제 초기화 실행 */
     const initializeMap = async () => {
       if (!mapRef.current || mapService.current) return;
 
       try {
         await waitForNaverMaps();
 
-        /* 기본 좌표 – 서울시청 */
-        const fallbackCoords = { latitude: 37.5665, longitude: 126.9780 };
+        /* ★ 1) 세션복구 → 2) 서울시청 좌표 */
+        const fallbackCoords =
+          getSavedLocation() ?? { latitude: 37.5665, longitude: 126.9780 };
 
-        /* 실제 MapService 등을 만드는 함수 */
-        const makeServices = coords => {
-          mapService.current = new MapService(mapRef.current, coords);
-          markerService.current = new MarkerService();
-          if (mapServiceRef) mapServiceRef.current = mapService.current;
-
-          /* 첫 현재 위치 마커 */
-          mapService.current.updateCurrentLocation(coords);
-
-          if (isSubscribed) {
-            setIsMapReady(true);
-            onCurrentLocationUpdate?.(coords);
-          }
-        };
-
-        /* 일회성 현재 위치 시도 */
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
-            pos => {
+            (pos) => {
               if (!isSubscribed) return;
               makeServices({
                 latitude: pos.coords.latitude,
-                longitude: pos.coords.longitude
+                longitude: pos.coords.longitude,
               });
             },
             () => {
-              /* 실패 → 기본 좌표 */
               if (!isSubscribed) return;
               makeServices(fallbackCoords);
             },
@@ -104,32 +131,28 @@ const NaverMap = ({
     };
   }, [mapServiceRef, onCurrentLocationUpdate]);
 
-  /* ------------------------------------------------------------------ */
-  /* 2. 실시간 userLocation → 마커 반영                                 */
-  /* ------------------------------------------------------------------ */
-
-  /* ref에 최신 위치 저장 */
+  /* -------------------------------------------------------------- */
+  /*  3. userLocation prop → 현재 위치 마커                          */
+  /* -------------------------------------------------------------- */
   useEffect(() => {
     if (userLocation) userLocationRef.current = userLocation;
   }, [userLocation]);
 
-  /* userLocation prop 변경 시 지도 마커 업데이트 */
   useEffect(() => {
     if (!mapService.current || !userLocation || !isMapReady) return;
-
     const coords = {
-      latitude: userLocation.lat ?? userLocation.latitude,
-      longitude: userLocation.lng ?? userLocation.longitude
+      latitude : userLocation.lat ?? userLocation.latitude,
+      longitude: userLocation.lng ?? userLocation.longitude,
     };
     mapService.current.updateCurrentLocation(coords, false);
   }, [userLocation, isMapReady]);
 
-  /* 일정 주기로(1초) 마커 위치만 살짝 갱신 */
+  /* 1초마다 좌표만 살짝 보간 */
   const refreshUserMarker = useCallback(() => {
     if (!mapService.current || !userLocationRef.current || !isMapReady) return;
     const coords = {
-      latitude: userLocationRef.current.lat ?? userLocationRef.current.latitude,
-      longitude: userLocationRef.current.lng ?? userLocationRef.current.longitude
+      latitude : userLocationRef.current.lat ?? userLocationRef.current.latitude,
+      longitude: userLocationRef.current.lng ?? userLocationRef.current.longitude,
     };
     mapService.current.updateCurrentLocation(coords, false);
   }, [isMapReady]);
@@ -140,27 +163,25 @@ const NaverMap = ({
     return () => clearInterval(id);
   }, [isMapReady, refreshUserMarker]);
 
-  /* ------------------------------------------------------------------ */
-  /* 3. 필터 토글 → 마커 생성/삭제                                       */
-  /* ------------------------------------------------------------------ */
-
+  /* -------------------------------------------------------------- */
+  /*  4. 필터 토글 → POI 마커 갱신                                   */
+  /* -------------------------------------------------------------- */
   useEffect(() => {
     if (!mapService.current || !markerService.current || !isMapReady) return;
 
-    const mapInstance = mapService.current.getMapInstance();
-    const center = mapInstance.getCenter();
+    const mapInstance     = mapService.current.getMapInstance();
+    const center          = mapInstance.getCenter();
     const currentLocation = { lat: center.lat(), lng: center.lng() };
 
-    /* 3-1. 꺼진(비활성) 필터의 마커만 제거 */
-    [...prevActiveFilters.current].forEach(filter => {
+    /* 꺼진 필터의 마커 제거 */
+    [...prevActiveFilters.current].forEach((filter) => {
       if (!activeFilters.includes(filter)) {
         markerService.current.removeMarkers(filter);
       }
     });
 
-    /* 3-2. 켜진 필터 → 마커가 없다면 생성 */
-    const tasks = activeFilters.map(async filter => {
-      /* 이미 마커가 있다면 skip(MarkerService 내부에서 중복 방지해도 OK) */
+    /* 켜진 필터의 마커 추가/토글 */
+    const tasks = activeFilters.map(async (filter) => {
       const places = await getPlacesForFilter(filter, currentLocation);
       if (places?.length) {
         await markerService.current.toggleMarkers(mapInstance, places, filter);
@@ -172,15 +193,12 @@ const NaverMap = ({
     });
   }, [activeFilters, isMapReady]);
 
-  /* ------------------------------------------------------------------ */
-  /* 4. 지도 중심 재설정                                                */
-  /* ------------------------------------------------------------------ */
-
-  /* ------------------------------------------------------------------ */
-  /* 5. 렌더                                                             */
-  /* ------------------------------------------------------------------ */
-
-  return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />;
+  /* -------------------------------------------------------------- */
+  /*  5. 렌더                                                        */
+  /* -------------------------------------------------------------- */
+  return (
+    <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+  );
 };
 
 export default NaverMap;
