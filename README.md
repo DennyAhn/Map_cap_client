@@ -14,12 +14,14 @@
 ## 📊 Problem Statement - Real Data Analysis
 
 ## 📚 문서 바로가기
+
 | 구분 | 문서 |
 | ---- | ---- |
-| API 명세 | [docs/API.md](/API.md) |
-| 배포 가이드 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
-| 프런트엔드 상세 | [docs/frontend.md](frontend/README.md) |
-| 백엔드 상세 | [docs/backend.md](backend/README.md) |
+| API 명세 | [API.md](API.md) |
+| 배포 가이드 | [DEPLOYMENT.md](DEPLOYMENT.md) |
+| 프런트엔드 상세 | [frontend.md](frontend.md) |
+| 백엔드 상세 | [backend.md](backend.md) |
+
 
 ### 🚨 Critical Statistics (2023 Police Data)
 
