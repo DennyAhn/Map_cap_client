@@ -132,6 +132,8 @@
 <details>
 <summary>시설물 파손 신고</summary>
 
+<img width="1404" height="878" alt="image" src="https://github.com/user-attachments/assets/0ca27c8b-5462-4c4f-bd8d-093e09336acd" />
+
 - 사진 촬영 → GPS 자동 태깅 → 설명 작성  
 - 카테고리 구분 & 처리 상태 추적  
 </details>
