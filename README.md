@@ -36,11 +36,13 @@
 - **생활 안전에 대한 시민 불안 가중 & 계명대 주변 저조도 구역**
   
 
--**시설물 파손**(가로등·맨홀 등)으로 인한 사고 위험 지속 제기
+-**시설물 파손(가로등·맨홀 등)으로 인한 사고 위험 지속 제기**
 
 
 
 <img width="427" height="235" alt="image" src="https://github.com/user-attachments/assets/be9d9094-c0d7-46e2-a884-35126e107b70" />
+
+
 <img width="426" height="129" alt="image" src="https://github.com/user-attachments/assets/7efcaf83-899b-4a6a-9ce9-c9536732f9a7" />
 
 
