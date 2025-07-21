@@ -18,9 +18,8 @@
 | ---- | ---- |
 | API 명세 | [docs/API.md](/API.md) |
 | 배포 가이드 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
-| 기여 방법 | [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) |
-| 프런트엔드 상세 | [frontend/README.md](frontend/README.md) |
-| 백엔드 상세 | [backend/README.md](backend/README.md) |
+| 프런트엔드 상세 | [frontend.md](frontend/README.md) |
+| 백엔드 상세 | [backend.md](backend/README.md) |
 
 ### 🚨 Critical Statistics (2023 Police Data)
 
