@@ -122,8 +122,10 @@
 <details>
 <summary>메인 대시보드</summary>
 
-- **실시간 안전 지도**  
-- **빠른 경로 검색**  
+<img width="1684" height="1078" alt="image" src="https://github.com/user-attachments/assets/dbb97c12-d9b1-4309-bbe3-0780de95a9fb" />
+
+- **사용자 맞춤형 지도**  
+- **사용자 맞춤형 카테고리**  
 - **지역별 안전 지수·주의사항**  
 </details>
 
