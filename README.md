@@ -122,7 +122,7 @@
 <details>
 <summary>메인 대시보드</summary>
 
-<img width="1684" height="1078" alt="image" src="https://github.com/user-attachments/assets/dbb97c12-d9b1-4309-bbe3-0780de95a9fb" />
+<img width="1404" height="878" alt="image" src="https://github.com/user-attachments/assets/dbb97c12-d9b1-4309-bbe3-0780de95a9fb" />
 
 - **사용자 맞춤형 지도**  
 - **사용자 맞춤형 카테고리**  
