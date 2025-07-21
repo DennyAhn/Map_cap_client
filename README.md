@@ -123,6 +123,7 @@
 <summary>메인 대시보드</summary>
 
 <img width="1404" height="878" alt="image" src="https://github.com/user-attachments/assets/dbb97c12-d9b1-4309-bbe3-0780de95a9fb" />
+<img width="1404" height="878" alt="image" src="https://github.com/user-attachments/assets/3a197086-8c24-40f9-a0df-45636d5f81da" />
 
 - **사용자 맞춤형 지도**  
 - **사용자 맞춤형 카테고리**  
@@ -140,6 +141,7 @@
 
 <details>
 <summary>위험 경로 제보</summary>
+<img width="1404" height="878" alt="image" src="https://github.com/user-attachments/assets/770e8352-4fa7-4f85-a604-31ae159b1c9f" />
 
 - 지도에서 위험 구간 직접 표시  
 - 위험 요소 태깅 & 시간대 기록  
@@ -147,6 +149,14 @@
 
 <details>
 <summary>관리자 페이지</summary>
+<img width="1116" height="646" alt="image" src="https://github.com/user-attachments/assets/dcfc993a-ce56-4a87-96c6-73b745e45108" />
+
+  
+<img width="1123" height="533" alt="image" src="https://github.com/user-attachments/assets/e8c3b91b-c45b-4c57-a018-a99f6bcf4616" />
+
+
+<img width="1291" height="724" alt="image" src="https://github.com/user-attachments/assets/e583ceb3-5dce-4690-8b7b-03508f465695" />
+<img width="1291" height="724" alt="image" src="https://github.com/user-attachments/assets/7aa5a96e-3be7-449f-bb97-7dc84e198828" />
 
 - 미처리 신고 목록·우선순위  
 - 지역별 통계 시각화  
