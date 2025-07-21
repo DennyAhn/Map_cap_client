@@ -28,15 +28,19 @@
 - **범죄 체감 안전도 하락**
   <img width="445" height="321" alt="image" src="https://github.com/user-attachments/assets/3471af7b-0308-4ca0-8806-a636aab68833" />
 
+
   - 대구 광역시 종합 체감안전도: 2016년 7위 → **2023년 14위(6년 만의 최저)**  
   - 전국 평균 범죄 체감 안전도 83점 (‑0.4) vs. 대구 77점 (14위)
  
     
 - **생활 안전에 대한 시민 불안 가중 & 계명대 주변 저조도 구역**
-  <img width="427" height="235" alt="image" src="https://github.com/user-attachments/assets/be9d9094-c0d7-46e2-a884-35126e107b70" />
-
+  
 
 -**시설물 파손**(가로등·맨홀 등)으로 인한 사고 위험 지속 제기
+
+
+
+<img width="427" height="235" alt="image" src="https://github.com/user-attachments/assets/be9d9094-c0d7-46e2-a884-35126e107b70" />
 <img width="426" height="129" alt="image" src="https://github.com/user-attachments/assets/7efcaf83-899b-4a6a-9ce9-c9536732f9a7" />
 
 
