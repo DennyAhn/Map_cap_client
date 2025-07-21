@@ -28,6 +28,9 @@
 | DevOps | Docker, GitHub Actions CI/CD, AWS EC2 (배포) |
 
 ## 🏗️ 시스템 아키텍처
+
+<img width="1496" height="1002" alt="image" src="https://github.com/user-attachments/assets/986f3a15-d9c0-43b7-84c3-d81c6ffb7ee5" />
+
 ```mermaid
 flowchart LR
   subgraph Client
