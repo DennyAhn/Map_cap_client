@@ -16,7 +16,7 @@
 ## 📚 문서 바로가기
 | 구분 | 문서 |
 | ---- | ---- |
-| API 명세 | [docs/API.md](docs/API.md) |
+| API 명세 | [docs/API.md](/API.md) |
 | 배포 가이드 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
 | 기여 방법 | [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) |
 | 프런트엔드 상세 | [frontend/README.md](frontend/README.md) |
