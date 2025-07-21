@@ -4,9 +4,9 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)](https://reactjs.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.0-6DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
+[![Node.js](https://img.shields.io/badge/Node.js-18.17.0-339933?logo=node.js)](https://nodejs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.103.0-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Docker](https://img.shields.io/badge/Docker-24.0.0-2496ED?logo=docker)](https://docker.com)
+[![AWS EC2](https://img.shields.io/badge/AWS%20EC2-FF9900?logo=amazon-aws)](https://aws.amazon.com/ec2/)
 
 > **2025 Capstone Design Final Project**  
 > A comprehensive safety-first navigation platform addressing the sharp rise in random street crimes targeting vulnerable populations.
@@ -71,60 +71,10 @@
 
 <img width="1000" height="738" alt="image" src="https://github.com/user-attachments/assets/e446da32-9dec-4df4-b59f-9b05b21c9561" />
 
+
 ## 🏗️ 시스템 아키텍처
 
-<img width="1000" height="702" alt="image" src="https://github.com/user-attachments/assets/986f3a15-d9c0-43b7-84c3-d81c6ffb7ee5" />
-
-```mermaid
-flowchart TB
-    subgraph "User Interface"
-        PWA[Progressive Web App]
-        Admin[관리자 페이지]
-    end
-    
-    subgraph "API Layer"
-        Gateway[Spring Boot Gateway]
-        Auth[Authentication Service]
-    end
-    
-    subgraph "Core Services"
-        Route[Route Service<br/>경로 최적화]
-        Community[Community Service<br/>제보 관리]
-        Safety[Safety AI Service<br/>위험도 분석]
-        Report[Report Service<br/>시설물 관리]
-    end
-    
-    subgraph "External APIs"
-        Police[경찰청 범죄 통계]
-        KakaoMap[Kakao Maps]
-        Weather[기상청 API]
-        CCTV[공공 CCTV DB]
-    end
-    
-    subgraph "Data Storage"
-        MySQL[(MySQL<br/>서비스 데이터)]
-        Vector[(Vector DB<br/>AI 임베딩)]
-        Files[(File Storage<br/>제보 이미지)]
-    end
-    
-    PWA --> Gateway
-    Admin --> Gateway
-    Gateway --> Auth
-    Gateway --> Route
-    Gateway --> Community  
-    Gateway --> Safety
-    Gateway --> Report
-    
-    Route --> KakaoMap
-    Safety --> Police
-    Safety --> Weather
-    Report --> CCTV
-    
-    Community --> MySQL
-    Report --> MySQL
-    Safety --> Vector
-    Community --> Files
-```
+<img width="900" height="702" alt="image" src="https://github.com/user-attachments/assets/986f3a15-d9c0-43b7-84c3-d81c6ffb7ee5" />
 
 ## 🚀 주요 화면 구성
 
@@ -151,8 +101,8 @@ flowchart TB
 ## ⚙️ 로컬 실행 방법
 
 ### 사전 요구사항
-- Docker Desktop 4.20+
-- Node.js 18+ (개발용)
+- Node.js 18+ 
+- npm 또는 yarn
 - Git
 
 ### 빠른 시작
@@ -162,21 +112,26 @@ flowchart TB
 git clone https://github.com/your-team/mapspicy.git
 cd mapspicy
 
-# 2. 환경 변수 설정  
-cp .env.sample .env
+# 2. 의존성 설치
+npm install
+
+# 3. 환경 변수 설정  
+cp .env.example .env
 # .env 파일에서 API 키와 데이터베이스 정보 입력
 
-# 3. 전체 서비스 실행
-docker-compose up -d --build
+# 4. 개발 서버 실행
+npm run dev
 
-# 4. 서비스 상태 확인
-docker-compose ps
+# 5. 백엔드 서비스 실행 (새 터미널)
+cd backend
+npm install
+npm start
 ```
 
 ### 접속 정보
 - **웹 애플리케이션**: http://localhost:3000
 - **관리자 페이지**: http://localhost:3000/admin  
-- **API 문서**: http://localhost:8080/swagger-ui.html
+- **Node.js API 서버**: http://localhost:5000/api
 - **AI 서비스**: http://localhost:8001/docs
 
 ## 📊 예상 성과 및 임팩트
@@ -239,6 +194,8 @@ docker-compose ps
 *2025 Capstone Design Project*
 
 </div>
+
+
 
 
 
