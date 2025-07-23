@@ -10,7 +10,7 @@
 [![Kakao Maps](https://img.shields.io/badge/Kakao%20Maps-FFCD00?logo=kakao&logoColor=000000)](https://apis.map.kakao.com/)
 [![Naver Map](https://img.shields.io/badge/Naver%20Map-03C75A?logo=naver&logoColor=white)](https://developers.naver.com/docs/map/)
 
-## 🌐 배포된 서비스
+## 🌐 배포된 MAPSPICY 서비스
 
 ### 실제 서비스 URL
 - **메인 서비스**: https://map-cap-client.vercel.app/
