@@ -102,7 +102,6 @@ MAPSPICY는 여성, 노약자, 장애인 등 안전 취약계층을 위한 맞�
 
 
 
-
 ---
 
 ## 🛠️ 기술 스택
@@ -130,8 +129,9 @@ MAPSPICY는 여성, 노약자, 장애인 등 안전 취약계층을 위한 맞�
 <img width="1404" height="878" alt="image" src="https://github.com/user-attachments/assets/3a197086-8c24-40f9-a0df-45636d5f81da" />
 
 - **사용자 맞춤형 지도**  
-- **사용자 맞춤형 카테고리**  
-- **지역별 안전 지수·주의사항**  
+- **사용자 맞춤형 카테고리**
+- **일반 경로(최단경로)제공**  
+- **안전 가중치에 따른 안전 경로제공**  
 </details>
 
 <details>
@@ -139,15 +139,16 @@ MAPSPICY는 여성, 노약자, 장애인 등 안전 취약계층을 위한 맞�
 
 <img width="1404" height="878" alt="image" src="https://github.com/user-attachments/assets/0ca27c8b-5462-4c4f-bd8d-093e09336acd" />
 
-- **사진 촬영 → GPS 자동 태깅 → 설명 작성**   
-- **카테고리 구분 & 처리 상태 추적**   
+- **간편한 시설물 파손제보**
+- **사진 촬영 → GPS기반 원클릭으로 위치 제보 → 설명 작성**   
+   
 </details>
 
 <details>
 <summary>위험 경로 제보</summary>
 <img width="1404" height="878" alt="image" src="https://github.com/user-attachments/assets/770e8352-4fa7-4f85-a604-31ae159b1c9f" />
 
-- **지도에서 위험 구간 직접 표시**   
+- **지도에서 위험 구간 직접 두 지점 클릭하여 위험 거리제보**   
 - **위험 요소 태깅 & 시간대 기록**   
 </details>
 
@@ -160,11 +161,13 @@ MAPSPICY는 여성, 노약자, 장애인 등 안전 취약계층을 위한 맞�
 
 
 <img width="1291" height="724" alt="image" src="https://github.com/user-attachments/assets/e583ceb3-5dce-4690-8b7b-03508f465695" />
+
 <img width="1291" height="724" alt="image" src="https://github.com/user-attachments/assets/7aa5a96e-3be7-449f-bb97-7dc84e198828" />
 
-- 신고 목록·우선순위  
-- 지역별 통계 시각화  
-- 위험 경로 건 수에 따라 표시
+- **신고 목록·우선순위**  
+- **지역별 통계 및 나이별 시각화**
+- **위험 경로 제보 시각화**
+- **위험 경로 건 수에 따라 표시**
 </details>
 
 ---
