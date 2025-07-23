@@ -1,7 +1,7 @@
 # MAPSPICY 🗺️🔥
 **Safe Route Navigation & Community Platform for Women, Elderly, and Disabled**
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 [![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18.17.0-339933?logo=node.js)](https://nodejs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.103.0-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
@@ -11,13 +11,10 @@
 ## 🌐 배포된 서비스
 
 ### 실제 서비스 URL
-- **메인 서비스**: [https://mapspicy.vercel.app](https://mapspicy.vercel.app)
-- **관리자 대시보드**: [https://admin.mapspicy.vercel.app](https://admin.mapspicy.vercel.app)
+- **메인 서비스**: https://map-cap-client.vercel.app/
+- **관리자 대시보드**: https://my-admin-app-rho.vercel.app
 - **API 문서**: [https://api.mapspicy.com/docs](https://api.mapspicy.com/docs)
 
-> 💡 **데모 계정**  
-> - 일반 사용자: `demo@mapspicy.com` / `demo123`
-> - 관리자: `admin@mapspicy.com` / `admin123`
 
 ## 📚 문서 바로가기
 
@@ -63,21 +60,25 @@ MAPSPICY는 여성, 노약자, 장애인 등 안전 취약계층을 위한 맞�
 
 ## ✨ 주요 기능
 
+
 ### 🧭 스마트 안전 경로 네비게이션
 - **사용자 맞춤형**: 일반/여성/노약자/장애인별 특화 경로 및 시설 카테고리 제공
 - **안전 가중치 시스템**: CCTV, 가로등, 편의점, 비상벨 등 안전요소 종합 평가
 - **실시간 경로 추적**: GPS 기반 현재 위치 실시간 업데이트
 - **안전 등급 표시**: 경로별 안전도 점수화 및 등급 제공
 
+
 ### 🗺️ 인터랙티브 안전 지도
 - **다중 마커 시스템**: 24시간 편의점, CCTV, 비상벨, 경찰서 등 실시간 표시
 - **카테고리별 필터링**: 사용자 필요에 따른 시설물 선택적 표시
 - **주변 시설 안내**: 마커 클릭 시 상세 정보 및 경로 안내 제공
 
+
 ### 👥 시민 참여형 커뮤니티
 - **시설물 파손 신고**: 사진 + GPS + 설명을 통한 원클릭 신고 시스템
 - **위험 구간 제보**: 지도 상에서 직접 위험 구역 지정 및 제보
 - **실시간 상태 추적**: 신고 처리 현황 및 개선 사항 피드백
+
 
 ### 📊 관리자 대시보드
 - **신고 관리 시스템**: 미처리 건의사항 우선순위별 분류
@@ -86,6 +87,7 @@ MAPSPICY는 여성, 노약자, 장애인 등 안전 취약계층을 위한 맞�
 
 
 ---
+
 
 ## 🏆 기대 효과 
 
@@ -135,16 +137,16 @@ MAPSPICY는 여성, 노약자, 장애인 등 안전 취약계층을 위한 맞�
 
 <img width="1404" height="878" alt="image" src="https://github.com/user-attachments/assets/0ca27c8b-5462-4c4f-bd8d-093e09336acd" />
 
-- 사진 촬영 → GPS 자동 태깅 → 설명 작성  
-- 카테고리 구분 & 처리 상태 추적  
+- **사진 촬영 → GPS 자동 태깅 → 설명 작성**   
+- **카테고리 구분 & 처리 상태 추적**   
 </details>
 
 <details>
 <summary>위험 경로 제보</summary>
 <img width="1404" height="878" alt="image" src="https://github.com/user-attachments/assets/770e8352-4fa7-4f85-a604-31ae159b1c9f" />
 
-- 지도에서 위험 구간 직접 표시  
-- 위험 요소 태깅 & 시간대 기록  
+- **지도에서 위험 구간 직접 표시**   
+- **위험 요소 태깅 & 시간대 기록**   
 </details>
 
 <details>
@@ -158,9 +160,9 @@ MAPSPICY는 여성, 노약자, 장애인 등 안전 취약계층을 위한 맞�
 <img width="1291" height="724" alt="image" src="https://github.com/user-attachments/assets/e583ceb3-5dce-4690-8b7b-03508f465695" />
 <img width="1291" height="724" alt="image" src="https://github.com/user-attachments/assets/7aa5a96e-3be7-449f-bb97-7dc84e198828" />
 
-- 미처리 신고 목록·우선순위  
+- 신고 목록·우선순위  
 - 지역별 통계 시각화  
-- 긴급 공지 발송  
+- 위험 경로 건 수에 따라 표시
 </details>
 
 ---
@@ -196,25 +198,39 @@ POST /api/reports
 
 ### 개발팀 구성
 
-**🎯 Project Manager (PM)**
+**🎯 Project Manager & Backend Developer (PM)**
+Name: 안 현 진 (Hyunjin Ahn)
 - 프로젝트 전체 기획 및 일정 관리
 - 요구사항 분석 및 기능 명세 작성
-- 팀 간 커뮤니케이션 및 품질 관리
+- 안전 가중치 알고리즘 설계 및 구현
+- 프로젝트 아키텍처 설계
+- UI x UX 기획
+- Node.js 서버 개발
+
+
+**⚙️ FULLSTACK Developer**
+Name: 김 경 현 
+- 지도 API 연동 및 실시간 데이터 시각화
+- Node.js/MapAPI 기반 개발
+- 공공API 카테고리 연결 
+- RESTful API 개발 
+- NGINX 이용한 EC2 배포
+- API 통신 및 개발 코드 최적화 작업
+
 
 **💻 Frontend Developer**
-- React 기반 사용자 인터페이스 설계 및 개발
-- 반응형 웹 디자인 및 UX/UI 최적화
-- 지도 API 연동 및 실시간 데이터 시각화
+Name: 조 태 석
+- React 기반 사용자 인터페이스 개발
+- 반응형 웹 디자인 및 UX/UI 개발
+- 관리자 페이지 UX/UI 개발
 
-**⚙️ Backend Developer**  
-- Node.js/FastAPI 기반 서버 아키텍처 설계
-- RESTful API 개발 및 데이터베이스 관리
-- 인증/보안 시스템 및 성능 최적화
+
 
 **📊 Data Engineer**
+Name: 강 범 석 
 - 공공데이터 수집 및 전처리 파이프라인 구축
-- 안전 가중치 알고리즘 설계 및 구현
-- 데이터 분석 및 머신러닝 모델 개발
+- 관리자 페이지 개발
+
 
 ---
 <div align="center">
