@@ -6,7 +6,9 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18.17.0-339933?logo=node.js)](https://nodejs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.103.0-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![AWS EC2](https://img.shields.io/badge/AWS%20EC2-FF9900?logo=amazon-aws)](https://aws.amazon.com/ec2/)
-
+[![Google Maps](https://img.shields.io/badge/Google%20Maps-4285F4?logo=googlemaps&logoColor=white)](https://developers.google.com/maps)
+[![Kakao Maps](https://img.shields.io/badge/Kakao%20Maps-FFCD00?logo=kakao&logoColor=000000)](https://apis.map.kakao.com/)
+[![Naver Map](https://img.shields.io/badge/Naver%20Map-03C75A?logo=naver&logoColor=white)](https://developers.naver.com/docs/map/)
 
 ## 🌐 배포된 서비스
 
