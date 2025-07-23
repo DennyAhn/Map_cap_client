@@ -122,7 +122,7 @@ MAPSPICY는 여성, 노약자, 장애인 등 안전 취약계층을 위한 맞�
 ## 🏗️ 시스템 아키텍처
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/986f3a15-d9c0-43b7-84c3-d81c6ffb7ee5" width="850" height="878" alt="Architecture Diagram" />
+  <img src="https://github.com/user-attachments/assets/986f3a15-d9c0-43b7-84c3-d81c6ffb7ee5" width="800" height="600" alt="Architecture Diagram" />
 </p>
 
 ---
